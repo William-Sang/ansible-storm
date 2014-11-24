@@ -1,0 +1,11 @@
+---
+- name: Install Storm
+  hosts: all
+  sudo: yes
+  roles:
+      - common
+      - jdk
+      - python
+      - zookeeper
+      - storm
+

@@ -1,0 +1,16 @@
+---
+
+storm_download_url : http://mirror.bit.edu.cn/apache/incubator/storm/apache-storm-0.9.2-incubating/apache-storm-0.9.2-incubating.tar.gz
+# 解压后的目录名称，需要手动执行找到实际的目录名称,解压名称和实际名称不一致
+storm_dir: apache-storm-0.9.2-incubating
+
+# java 版本
+java_versions : oracle-jdk7-installer
+
+# 连接设置
+ansible_ssh_user : ubuntu
+ansible_ssh_private_key_file : /path/security.pem 
+
+# 是否启动主节点的 UI 和 logviewer
+enable_ui : 'true'
+enable_logviewer: 'true'

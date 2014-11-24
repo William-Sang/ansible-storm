@@ -1,0 +1,21 @@
+########### These MUST be filled in for a storm configuration
+#
+storm.zookeeper.servers:
+{% for host in groups['storm'] %}
+    - "{{hostvars[host].ansible_hostname}}"
+{% endfor %}
+
+# set nimbus host
+{% for h in groups['storm'] %}
+{% if hostvars[h].nimbus is defined and hostvars[h].nimbus == 'true' %}
+nimbus.host: "{{hostvars[h].ansible_hostname}}"
+{% endif %}
+{% endfor %}
+
+storm.zookeeper.port: 2181
+storm.local.dir: "/usr/local/src/{{storm_dir}}/data"
+supervisor.slots.ports:
+    - 6700
+    - 6701
+    - 6702
+    - 6703

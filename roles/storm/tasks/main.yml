@@ -1,0 +1,55 @@
+---
+- name: Download storm
+  get_url: url={{storm_download_url}} dest=/usr/local/src/ owner=root group=root mode=0644
+  register: storm_tar_file
+  async: 100
+
+#- name: debug downlaod
+#  debug: msg="{{storm_tar_file}}"
+
+- name: Unarchive strom
+  unarchive: src={{storm_tar_file['dest']}} dest=/usr/local/src/ copy=no owner=root group=root mode=0644
+
+#- name: debug  hostvars[host].zookeeper_id
+#  debug: msg="{{nimbus}}"
+
+
+# 由于解压后,输出结果里面无法获取解压后的目录名,所以使用配置变量人工指定的方法
+- name: cp storm configuation
+  template: src=storm.yaml dest=/usr/local/src/{{storm_dir}}/conf/storm.yaml owner=root group=root mode=0644
+
+# 创建日志目录
+- name: create storm log dir
+  file: path=/usr/local/src/{{storm_dir}}/logs state=directory
+
+# 创建Nimbus和Supervisor迚程用亍存储少量状态,如jars、confs等的 本地磁盘目录
+- name: create storm.local.dir
+  file: path=/usr/local/src/{{storm_dir}}/data state=directory
+
+# Install supervisor，用户storm服务化
+- name: install supervisor
+  apt: name=supervisor=3.0b2-1 state=present
+
+# 添加 nimbus 的服务脚本
+- name: add storm nimbus supervisor conf
+  template: src=storm_nimbus.conf dest=/etc/supervisor/conf.d/storm_nimbus.conf owner=root group=root mode=0644
+  when: nimbus == 'true'
+  notify: restart supervisor
+
+# 添加 storm ui 服务脚本
+- name: add storm ui supervisor conf
+  template: src=storm_ui.conf dest=/etc/supervisor/conf.d/storm_ui.conf owner=root group=root mode=0644
+  when: nimbus == 'true' and enable_ui == 'true'
+  notify: restart supervisor
+
+# 添加 storm ui 服务脚本
+- name: add storm logviewer supervisor conf
+  template: src=storm_logviewer.conf dest=/etc/supervisor/conf.d/storm_logviewer.conf owner=root group=root mode=0644
+  when: nimbus == 'true' and enable_logviewer == 'true'
+  notify: restart supervisor
+
+# 添加 worker 的服务脚本
+- name: add storm worker supervisor conf
+  template: src=storm_worker.conf dest=/etc/supervisor/conf.d/storm_worker.conf owner=root group=root mode=0644
+  when: worker == 'true'
+  notify: restart supervisor

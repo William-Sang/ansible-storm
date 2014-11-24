@@ -1,0 +1,4 @@
+[storm]
+54.64.89.18 zookeeper_id=1 nimbus=true worker=false
+54.64.22.14 zookeeper_id=2 nimbus=false worker=true
+54.65.2.112 zookeeper_id=3 nimbus=false worker=true

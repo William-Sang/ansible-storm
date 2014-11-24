@@ -1,0 +1,20 @@
+---
+- name: Install zookeeper
+  apt: name=zookeeper=3.4.5+dfsg-1 state=present
+
+- name: Install zookeeper init control scripts
+  apt: name=zookeeperd=3.4.5+dfsg-1 state=present
+
+#- name: debug
+#  debug: msg="输出变量:{{hostvars[inventory_hostname]}} ++ {{ansible_hostname}}"
+
+#- name: debug
+#  debug: msg="{{groups['all']}}"
+
+- name: Configure zookeeper cluster, zoo.cfg
+  template: src=zoo.cfg dest=/etc/zookeeper/conf/zoo.cfg owner=root group=root mode=0644
+  notify: restart zookeeper
+
+- name: Set zookeeper myid
+  template: src=myid dest=/etc/zookeeper/conf/myid owner=root group=root mode=0644
+  notify: restart zookeeper
